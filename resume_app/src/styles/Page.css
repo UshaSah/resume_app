@@ -8,12 +8,15 @@
     /* To right edge */
     text-align: center;
     /* Center the text content */
-    color: white;
+    color: rgb(219, 191, 191);
     padding: 1.5rem 2rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     /* Above other content */
     padding: 2rem;
+    background-color: #fff;
+    margin-bottom: 2rem;
+    /* fully opaque */
 }
 
 .app-header h1 {
@@ -35,12 +38,16 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 800px;
+    margin-top: 5rem
 }
 
 h1 {
     text-align: center;
     color: #333;
     margin-bottom: 20px;
+    margin-top: 10px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 40px;
 }
 
 .fieldset-wrapper {

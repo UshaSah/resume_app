@@ -12,9 +12,11 @@ function App() {
           <h1>Resume Builder</h1>
         </header>
       </div>
-
+      {/* form begins */}
       <div className="form-wrapper">
-        {/* <h1>Profile Information</h1> */}
+        <h1>Profile Information</h1>
+
+        {/* genral info section */}
         <form>
           <div className='fieldset-wrapper'>
             <fieldset>
@@ -44,10 +46,78 @@ function App() {
                 pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                 title="Please enter a phone number in the format: 123-456-7890"
                 required />
+            </fieldset>
+          </div>
+        </form>
+
+
+        {/* education section */}
+        <form>
+          <div className='fieldset-wrapper'>
+            <fieldset>
+              <h2>Education</h2>
+              <label htmlFor="name">Name of University</label>
+              <input
+                type="text"
+                id="institution"
+                name="Name of University"
+                placeholder="Your university name"
+                required={true}
+              />
+              <label htmlFor="degree">Degree</label>
+              <input
+                type="text"
+                id="degree"
+                name="degree"
+                placeholder="Degree earned"
+                required={true}
+              />
+              <label htmlFor="major">Field of Education</label>
+              <input
+                type="text"
+                id="major"
+                name="major"
+                placeholder="Field of Education"
+                required />
 
             </fieldset>
           </div>
         </form>
+
+        {/* experience section */}
+        <form>
+          <div className='fieldset-wrapper'>
+            <fieldset>
+              <h2>Education</h2>
+              <label htmlFor="name">Name of University</label>
+              <input
+                type="text"
+                id="institution"
+                name="Name of University"
+                placeholder="Your university name"
+                required={true}
+              />
+              <label htmlFor="degree">Degree</label>
+              <input
+                type="text"
+                id="degree"
+                name="degree"
+                placeholder="Degree earned"
+                required={true}
+              />
+              <label htmlFor="major">Field of Education</label>
+              <input
+                type="text"
+                id="major"
+                name="major"
+                placeholder="Field of Education"
+                required />
+
+            </fieldset>
+          </div>
+        </form>
+
+
       </div>
     </>
   )
