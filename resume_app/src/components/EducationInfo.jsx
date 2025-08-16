@@ -14,7 +14,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
         console.log('Education Info submitted!')
     }
 
-    const handleChange = (e) => {
+    const handleEducationChange = (e) => {
         const { name, value } = e.target;
         setEducationInfo(prev => ({
             ...prev,
@@ -32,7 +32,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
                         id="institution"
                         name="institution"
                         value={educationInfo.institution}
-                        onChange={handleChange}
+                        onChange={handleEducationChange}
                         placeholder="Your university name"
                         required
                     />
@@ -42,7 +42,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
                         id="degree"
                         name="degree"
                         value={educationInfo.degree}
-                        onChange={handleChange}
+                        onChange={handleEducationChange}
                         placeholder="Degree earned"
                         required
                     />
@@ -52,7 +52,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
                         id="major"
                         name="major"
                         value={educationInfo.major}
-                        onChange={handleChange}
+                        onChange={handleEducationChange}
                         placeholder="Field of Study"
                         required />
 

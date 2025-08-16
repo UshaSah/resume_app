@@ -3,19 +3,31 @@ import './App.css'
 import './styles/Page.css'
 import GeneralInfo from './components/GeneralInfo'
 import EducationInfo from './components/EducationInfo'
+import ExperienceInfo from './components/WorkInfo'
 
 function App() {
   const [generalInfo, setGeneralInfo] = useState({})
   const [educationInfo, setEducationInfo] = useState({})
+  const [experienceInfo, setExperienceInfo] = useState({})
 
   const handleSubmitInfo = (data) => {
     setGeneralInfo(data);
     console.log('General Info submitted:', data);
     alert('General Information saved successfully!');
+  };
+
+
+  const handleSubmitEducation = (data) => {
     setEducationInfo(data);
     console.log('Education Info submitted:', data);
     alert('Education Information saved successfully!');
   };
+
+  const handleSubmitExperience = (data) => {
+    setExperienceInfo(data);
+    console.log('Experience Info submitted:', data);
+    alert('Experience Infomation successfully saved!')
+  }
 
   return (
     <>
@@ -33,42 +45,11 @@ function App() {
 
 
         {/* education section */}
-        <EducationInfo onSubmitEducationInfo={handleSubmitInfo} />
+        <EducationInfo onSubmitEducationInfo={handleSubmitEducation} />
 
 
         {/* experience section */}
-        <form>
-          <div className='fieldset-wrapper'>
-            <fieldset>
-              <h2>Work Experience</h2>
-              <label htmlFor="company">Company Name</label>
-              <input
-                type="text"
-                id="company"
-                name="company"
-                placeholder="Your company name"
-                required
-              />
-              <label htmlFor="position">Job Title</label>
-              <input
-                type="text"
-                id="position"
-                name="position"
-                placeholder="Your job title"
-                required
-              />
-              <label htmlFor="duration">Duration</label>
-              <input
-                type="text"
-                id="duration"
-                name="duration"
-                placeholder="e.g., 2020-2023"
-                required />
-
-            </fieldset>
-          </div>
-        </form>
-
+        <ExperienceInfo onSubmitExperienceInfo={handleSubmitExperience} />
 
       </div>
     </>
