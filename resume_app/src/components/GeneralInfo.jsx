@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-function GeneralInfo({ onSumitGeneralInfo }) {
+function GeneralInfo({ onSubmitGeneralInfo }) {
     const [generalInfo, setGeneralInfo] = useState({
         fullName: '',
         email: '',
@@ -9,7 +9,7 @@ function GeneralInfo({ onSumitGeneralInfo }) {
 
     const handleSubmitInfo = (e) => {
         e.preventDefault();
-        onSumitGeneralInfo(generalInfo);
+        onSubmitGeneralInfo(generalInfo);
         console.log('General Info submitted!')
 
     };

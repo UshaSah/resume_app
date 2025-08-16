@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import './App.css'
 import './styles/Page.css'
-import './components/GeneralInfo'
 import GeneralInfo from './components/GeneralInfo'
 
 function App() {
-  const [generlInfo, setGeneralInfo] = useState('')
+  const [generalInfo, setGeneralInfo] = useState({})
 
   const handleSubmitInfo = (data) => {
+    setGeneralInfo(data);
     console.log('General Info submitted:', data);
+    alert('General Information saved successfully!');
   };
 
   return (
@@ -23,7 +24,7 @@ function App() {
         <h1>Profile Information</h1>
 
         {/* genral info section */}
-        <GeneralInfo onSumitGeneralInfo={handleSubmitInfo} />
+        <GeneralInfo onSubmitGeneralInfo={handleSubmitInfo} />
 
 
         {/* education section */}
@@ -35,9 +36,9 @@ function App() {
               <input
                 type="text"
                 id="institution"
-                name="Name of University"
+                name="institution"
                 placeholder="Your university name"
-                required={true}
+                required
               />
               <label htmlFor="degree">Degree</label>
               <input
@@ -45,14 +46,14 @@ function App() {
                 id="degree"
                 name="degree"
                 placeholder="Degree earned"
-                required={true}
+                required
               />
-              <label htmlFor="major">Field of Education</label>
+              <label htmlFor="major">Field of Study</label>
               <input
                 type="text"
                 id="major"
                 name="major"
-                placeholder="Field of Education"
+                placeholder="Field of Study"
                 required />
 
             </fieldset>
@@ -63,29 +64,29 @@ function App() {
         <form>
           <div className='fieldset-wrapper'>
             <fieldset>
-              <h2>Education</h2>
-              <label htmlFor="name">Name of University</label>
+              <h2>Work Experience</h2>
+              <label htmlFor="company">Company Name</label>
               <input
                 type="text"
-                id="institution"
-                name="Name of University"
-                placeholder="Your university name"
-                required={true}
+                id="company"
+                name="company"
+                placeholder="Your company name"
+                required
               />
-              <label htmlFor="degree">Degree</label>
+              <label htmlFor="position">Job Title</label>
               <input
                 type="text"
-                id="degree"
-                name="degree"
-                placeholder="Degree earned"
-                required={true}
+                id="position"
+                name="position"
+                placeholder="Your job title"
+                required
               />
-              <label htmlFor="major">Field of Education</label>
+              <label htmlFor="duration">Duration</label>
               <input
                 type="text"
-                id="major"
-                name="major"
-                placeholder="Field of Education"
+                id="duration"
+                name="duration"
+                placeholder="e.g., 2020-2023"
                 required />
 
             </fieldset>
