@@ -2,14 +2,19 @@ import { useState } from 'react'
 import './App.css'
 import './styles/Page.css'
 import GeneralInfo from './components/GeneralInfo'
+import EducationInfo from './components/EducationInfo'
 
 function App() {
   const [generalInfo, setGeneralInfo] = useState({})
+  const [educationInfo, setEducationInfo] = useState({})
 
   const handleSubmitInfo = (data) => {
     setGeneralInfo(data);
     console.log('General Info submitted:', data);
     alert('General Information saved successfully!');
+    setEducationInfo(data);
+    console.log('Education Info submitted:', data);
+    alert('Education Information saved successfully!');
   };
 
   return (
@@ -28,37 +33,8 @@ function App() {
 
 
         {/* education section */}
-        <form>
-          <div className='fieldset-wrapper'>
-            <fieldset>
-              <h2>Education</h2>
-              <label htmlFor="name">Name of University</label>
-              <input
-                type="text"
-                id="institution"
-                name="institution"
-                placeholder="Your university name"
-                required
-              />
-              <label htmlFor="degree">Degree</label>
-              <input
-                type="text"
-                id="degree"
-                name="degree"
-                placeholder="Degree earned"
-                required
-              />
-              <label htmlFor="major">Field of Study</label>
-              <input
-                type="text"
-                id="major"
-                name="major"
-                placeholder="Field of Study"
-                required />
+        <EducationInfo onSubmitEducationInfo={handleSubmitInfo} />
 
-            </fieldset>
-          </div>
-        </form>
 
         {/* experience section */}
         <form>
