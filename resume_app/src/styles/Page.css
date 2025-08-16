@@ -110,17 +110,17 @@ form textarea {
 }
 
 button {
-    width: 100%;
+    width: 20%;
     padding: 12px;
-    border: none;
-    border-radius: 8px;
+    box-shadow: 5px 5px #888888;
+    border-radius: 12px;
     background-color: #c8c7d6;
-    color: #fff;
+    color: #2a3b3f;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #5952cc;
+    background-color: #8e698e;
 }

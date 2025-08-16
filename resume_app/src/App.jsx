@@ -1,9 +1,15 @@
 import { useState } from 'react'
 import './App.css'
 import './styles/Page.css'
+import './components/GeneralInfo'
+import GeneralInfo from './components/GeneralInfo'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [generlInfo, setGeneralInfo] = useState('')
+
+  const handleSubmitInfo = (data) => {
+    console.log('General Info submitted:', data);
+  };
 
   return (
     <>
@@ -17,38 +23,7 @@ function App() {
         <h1>Profile Information</h1>
 
         {/* genral info section */}
-        <form>
-          <div className='fieldset-wrapper'>
-            <fieldset>
-              <h2>General Information</h2>
-              <label htmlFor="name">Full Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                placeholder="Your full name"
-                required={true}
-              />
-              <label htmlFor="email">Email address</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Your email address"
-                required={true}
-              />
-              <label htmlFor="phone">Phone Number</label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                placeholder="123-456-7890"
-                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                title="Please enter a phone number in the format: 123-456-7890"
-                required />
-            </fieldset>
-          </div>
-        </form>
+        <GeneralInfo onSumitGeneralInfo={handleSubmitInfo} />
 
 
         {/* education section */}
