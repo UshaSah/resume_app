@@ -28,3 +28,5 @@ function ResumePreview({ generalInfo, educationInfo, experienceInfo }) {
         </div>
     );
 }
+
+export default ResumePreview
