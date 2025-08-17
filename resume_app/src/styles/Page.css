@@ -124,3 +124,19 @@ button {
 button:hover {
     background-color: #8e698e;
 }
+
+resume-button {
+    width: 60%;
+    padding: 12px;
+    box-shadow: 5px 5px #545151;
+    border-radius: 12px;
+    background-color: #7077c6;
+    color: #2a3b3f;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+resume-button:hover {
+    background-color: #8e698e;
+}

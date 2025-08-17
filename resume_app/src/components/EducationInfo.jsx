@@ -8,7 +8,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
     });
 
 
-    const handleSubmitInfo = (e) => {
+    const handleSubmitEducation = (e) => {
         e.preventDefault()
         onSubmitEducationInfo(educationInfo)
         console.log('Education Info submitted!')
@@ -22,7 +22,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
         }));
     };
     return (
-        <form onSubmit={handleSubmitInfo} className='fieldset-wrapper'>
+        <form onSubmit={handleSubmitEducation} className='fieldset-wrapper'>
             <div className='fieldset-wrapper'>
                 <fieldset>
                     <h2>Education</h2>
