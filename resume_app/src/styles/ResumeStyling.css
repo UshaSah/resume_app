@@ -31,3 +31,47 @@
     padding-bottom: 5px;
     margin-bottom: 15px;
 }
+
+.resume-container {
+    margin-top: 40px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.resume-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.resume-actions button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.resume-actions button:first-child {
+    background: #3498db;
+    color: white;
+}
+
+.resume-actions button:nth-child(2) {
+    background: #27ae60;
+    color: white;
+}
+
+.resume-actions button:last-child {
+    background: #95a5a6;
+    color: white;
+}
+
+.resume-actions button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
