@@ -5,14 +5,19 @@ function ExperienceInfo({ onSubmitExperienceInfo }) {
         company: '',
         job_title: '',
         duration: ''
-    })
-
+    });
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     const handleSubmitExperience = (e) => {
         e.preventDefault();
         onSubmitExperienceInfo(experienceInfo);
+        setIsSubmitted(true);
         console.log('Experience Info submitted!');
     };
+
+    const handleEdit = (e) => {
+        setIsSubmitted(false);
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -33,6 +38,7 @@ function ExperienceInfo({ onSubmitExperienceInfo }) {
                         id="company"
                         name="company"
                         value={experienceInfo.company}
+                        readOnly={isSubmitted}
                         onChange={handleChange}
                         placeholder="Your company name"
                         required
@@ -43,6 +49,7 @@ function ExperienceInfo({ onSubmitExperienceInfo }) {
                         id="job_title"
                         name="job_title"
                         value={experienceInfo.job_title}
+                        readOnly={isSubmitted}
                         onChange={handleChange}
                         placeholder="Your job title"
                         required
@@ -53,12 +60,14 @@ function ExperienceInfo({ onSubmitExperienceInfo }) {
                         id="duration"
                         name="duration"
                         value={experienceInfo.duration}
+                        readOnly={isSubmitted}
                         onChange={handleChange}
                         placeholder="e.g., 2020-2023"
                         required
                     />
                     <div className="fieldset-button">
-                        <button type="submit">Submit</button>
+                        <button type="submit" disabled={isSubmitted}>Submit</button>
+                        <button type="button" onClick={() => setIsSubmitted(false)} className="edit-button">Edit</button>
                     </div>
                 </fieldset>
             </div>
