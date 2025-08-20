@@ -6,12 +6,18 @@ function EducationInfo({ onSubmitEducationInfo }) {
         degree: '',
         major: ''
     });
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
 
     const handleSubmitEducation = (e) => {
-        e.preventDefault()
-        onSubmitEducationInfo(educationInfo)
+        e.preventDefault();
+        onSubmitEducationInfo(educationInfo);
+        setIsSubmitted(true);
         console.log('Education Info submitted!')
+    }
+
+    const handleEdit = (e) => {
+        setIsSubmitted(false);
     }
 
     const handleEducationChange = (e) => {
@@ -32,6 +38,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
                         id="institution"
                         name="institution"
                         value={educationInfo.institution}
+                        readOnly={isSubmitted}
                         onChange={handleEducationChange}
                         placeholder="Your university name"
                         required
@@ -42,6 +49,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
                         id="degree"
                         name="degree"
                         value={educationInfo.degree}
+                        readOnly={isSubmitted}
                         onChange={handleEducationChange}
                         placeholder="Degree earned"
                         required
@@ -52,12 +60,14 @@ function EducationInfo({ onSubmitEducationInfo }) {
                         id="major"
                         name="major"
                         value={educationInfo.major}
+                        readOnly={isSubmitted}
                         onChange={handleEducationChange}
                         placeholder="Field of Study"
                         required />
 
                     <div className="fieldset-button">
-                        <button type="submit">Submit</button>
+                        <button type="submit" disabled={isSubmitted}>Submit</button>
+                        <button type="button" onClick={handleEdit} className='edit-button'>Edit</button>
                     </div>
                 </fieldset>
             </div>
