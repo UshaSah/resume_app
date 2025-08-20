@@ -8,7 +8,7 @@ function GeneralInfo({ onSubmitGeneralInfo }) {
         phone: ''
     });
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [displayedInfo, setDisplayedInfo] = useState({});
+    // const [isEditing, setIsEditing] = useState(false);
 
     const handleSubmitInfo = (e) => {
         e.preventDefault();
@@ -17,6 +17,10 @@ function GeneralInfo({ onSubmitGeneralInfo }) {
         console.log('General Info submitted!')
 
     };
+
+    const handleEdit = (e) => {
+        setIsSubmitted(false);
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -68,7 +72,7 @@ function GeneralInfo({ onSubmitGeneralInfo }) {
 
                     <div className="fieldset-button">
                         <button type="submit" disabled={isSubmitted}>Submit</button>
-                        <button type="button" className="edit-button">Edit</button>
+                        <button type="button" onClick={handleEdit} className="edit-button">Edit</button>
                     </div>
                 </fieldset>
 
