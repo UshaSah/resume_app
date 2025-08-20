@@ -1,15 +1,19 @@
 import { useState } from 'react'
 
+
 function GeneralInfo({ onSubmitGeneralInfo }) {
     const [generalInfo, setGeneralInfo] = useState({
         fullName: '',
         email: '',
         phone: ''
     });
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [displayedInfo, setDisplayedInfo] = useState({});
 
     const handleSubmitInfo = (e) => {
         e.preventDefault();
         onSubmitGeneralInfo(generalInfo);
+        setIsSubmitted(true);
         console.log('General Info submitted!')
 
     };
@@ -33,6 +37,7 @@ function GeneralInfo({ onSubmitGeneralInfo }) {
                         id="name"
                         name="fullName"
                         value={generalInfo.fullName}
+                        readOnly={isSubmitted}
                         onChange={handleChange}
                         placeholder="Your full name"
                         required={true}
@@ -43,6 +48,7 @@ function GeneralInfo({ onSubmitGeneralInfo }) {
                         id="email"
                         name="email"
                         value={generalInfo.email}
+                        readOnly={isSubmitted}
                         onChange={handleChange}
                         placeholder="Your email address"
                         required={true}
@@ -54,13 +60,15 @@ function GeneralInfo({ onSubmitGeneralInfo }) {
                         name="phone"
                         value={generalInfo.phone}
                         onChange={handleChange}
+                        readOnly={isSubmitted}
                         placeholder="123-456-7890"
                         pattern="[0-9]{10}"
                         title="Please enter a phone number in the format: 1234567890"
                         required />
 
                     <div className="fieldset-button">
-                        <button type="submit">Submit</button>
+                        <button type="submit" disabled={isSubmitted}>Submit</button>
+                        <button type="button" className="edit-button">Edit</button>
                     </div>
                 </fieldset>
 
