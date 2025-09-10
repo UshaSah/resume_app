@@ -22,19 +22,41 @@ function App() {
 
   const handleSubmitEducation = (data) => {
     setEducationInfo(data);
-    console.log('Education Info submitted:', data);
-    alert('Education Information saved successfully!');
+    setMessage('Education Information saved locally!');
+    setTimeout(() => setMessage(''), 3000);
   };
 
   const handleSubmitExperience = (data) => {
     setExperienceInfo(data);
-    console.log('Experience Info submitted:', data);
-    alert('Experience Information saved successfully!');
+    setMessage('Experience Information saved locally!');
+    setTimeout(() => setMessage(''), 3000);
   };
 
-  const handleGenerateResume = () => {
+  const handleGenerateResume = async () => {
     if (generalInfo.fullName && educationInfo.institution && experienceInfo.company) {
-      setShowResume(true);
+      setIsLoading(true);
+      setMessage('Saving resume to backend...');
+      
+      try {
+        const resumeData = {
+          generalInfo,
+          educationInfo,
+          experienceInfo
+        };
+        
+        const result = await saveResume(resumeData);
+        setSavedResumeId(result.data.id);
+        setMessage(`Resume saved successfully! ID: ${result.data.id}`);
+        setShowResume(true);
+      } catch (error) {
+        console.error('Error saving resume:', error);
+        setMessage('Error saving resume. Please try again.');
+        // Still show the resume even if saving fails
+        setShowResume(true);
+      } finally {
+        setIsLoading(false);
+        setTimeout(() => setMessage(''), 5000);
+      }
     } else {
       alert('Please fill in all required sections first!');
     }
@@ -85,6 +107,18 @@ function App() {
             />
 
             <div className="resume-actions">
+              {savedResumeId && (
+                <div style={{
+                  padding: '10px',
+                  margin: '10px 0',
+                  backgroundColor: '#e3f2fd',
+                  color: '#1565c0',
+                  borderRadius: '4px',
+                  border: '1px solid #bbdefb'
+                }}>
+                  ✅ Resume saved with ID: {savedResumeId}
+                </div>
+              )}
               <button onClick={handleGeneratePDF}>Download PDF</button>
               <button onClick={() => window.print()}>Print Resume</button>
               <button onClick={() => setShowResume(false)}>Back to Form</button>
