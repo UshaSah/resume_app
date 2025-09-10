@@ -101,9 +101,6 @@ Thumbs.db
 *.tmp
 *.temp
 
-# Create/update .gitignore
-echo "node_modules/" >> .gitignore
-echo "*.log" >> .gitignore
-echo "*.tmp" >> .gitignore
-echo ".DS_Store" >> .gitignore
-echo "resumes.json" >> .gitignore  # Exclude data file
+# Data files (exclude from version control)
+resumes.json
+*.json.bak
