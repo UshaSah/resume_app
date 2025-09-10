@@ -185,7 +185,7 @@ app.delete('/api/resumes/:id', (req, res) => {
         const id = parseInt(req.params.id);
         const resumeIndex = resumes.findIndex(r => r.id === id);
 
-        if (resumeIndex == -1) {
+        if (resumeIndex === -1) {
             return res.status(404).json({
                 success: false,
                 message: 'Resume not found'
