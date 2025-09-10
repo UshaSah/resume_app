@@ -25,9 +25,6 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
 
 app.listen(PORT, () => {
     console.log(`🚀 Resume Backend running on http://localhost:${PORT}`);
@@ -112,6 +109,103 @@ app.post('/api/resumes', (req, res) => {
             message: 'Internal server error',
             error: error.message
         })
+    }
+});
+
+// READ - Get single resume
+app.get('/api/resumes/:id', (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const resume = resumes.find(r => r.id === id);
+
+        if (!resume) {
+            return res.status(404).json({
+                success: false,
+                message: 'Resume not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: resume,
+            message: 'Resume retrieved successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error retrieving resume',
+            error: error.message
+        });
+    }
+});
+
+// UPDATE - Update resume
+app.put('/api/resumes/:id', (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const resumeIndex = resumes.findIndex(r => r.id === id);
+
+        if (resumeIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: 'Resume not found'
+            });
+        }
+
+        const { generalInfo, educationInfo, experienceInfo } = req.body;
+
+        resumes[resumeIndex] = {
+            ...resumes[resumeIndex],
+            generalInfo: generalInfo || resumes[resumeIndex].generalInfo,
+            educationInfo: educationInfo || resumes[resumeIndex].educationInfo,
+            experienceInfo: experienceInfo || resumes[resumeIndex].experienceInfo,
+            updatedAt: new Date().toISOString()
+        };
+        saveResumes();
+
+        res.json({
+            success: true,
+            message: 'Resume updated successfully!',
+            data: resumes[resumeIndex]
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error updating resume',
+            error: error.message
+
+        });
+        
+    }
+});
+
+// DELETE - delete resume
+app.delete('/api/resumes/:id', (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const resumeIndex = resumes.findIndex(r => r.id === id);
+
+        if (resumeIndex == -1) {
+            return res.status(404).json({
+                success: false,
+                message: 'Resume not found'
+            });
+        }
+
+        const deletedResume = resumes.splice(resumeIndex, 1)[0];
+        saveResumes();
+
+        res.json({
+            success: true,
+            message: 'Resume deleted successfully!',
+            data: deletedResume
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error deleting resume',
+            error: error.message
+        });
     }
 });
 
