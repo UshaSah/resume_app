@@ -4,11 +4,15 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = 80;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from React build
+const frontendPath = path.join(__dirname, '../resume_app/dist');
+app.use(express.static(frontendPath));
 
 
 // File storage setup
@@ -27,9 +31,11 @@ app.get('/api/health', (req, res) => {
 
 
 app.listen(PORT, () => {
-    console.log(`🚀 Resume Backend running on http://localhost:${PORT}`);
+    console.log(`🚀 Resume App running on http://localhost:${PORT}`);
     console.log(`📋 Available endpoints:`);
+    console.log(`   GET  / - Frontend (React App)`);
     console.log(`   POST /api/resumes - Create new resume`);
+    console.log(`   GET  /api/health - Health check`);
 });
 
 // Load resumes from file on startup
@@ -207,5 +213,26 @@ app.delete('/api/resumes/:id', (req, res) => {
             error: error.message
         });
     }
+});
+
+// Serve React app for root path
+app.get('/', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+// Catch-all handler: send back React's index.html file for any non-API routes (for React Router)
+app.use((req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received. Shutting down gracefully...');
+    process.exit(0);
+});
+
+process.on('SIGINT', () => {
+    console.log('SIGINT received. Shutting down gracefully...');
+    process.exit(0);
 });
 
