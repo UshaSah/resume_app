@@ -10,6 +10,7 @@ function ExperienceInfo({ onSubmitExperienceInfo }) {
 
     const handleSubmitExperience = (e) => {
         e.preventDefault();
+        console.log('Experience form submitted, data:', experienceInfo);
         onSubmitExperienceInfo(experienceInfo);
         console.log('Experience Info submitted!');
     };

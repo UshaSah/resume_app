@@ -7,11 +7,33 @@ import ExperienceInfo from './components/WorkInfo'
 import ResumePreview from './components/ResumePreview'
 import { generatePDF } from './utils/pdfGenerator'
 
+// Simple API service
+const API_BASE_URL = 'http://localhost:80';
+
+const saveResume = async (resumeData) => {
+  const response = await fetch(`${API_BASE_URL}/api/resumes`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(resumeData),
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to save resume');
+  }
+  
+  return response.json();
+};
+
 function App() {
   const [generalInfo, setGeneralInfo] = useState({})
   const [educationInfo, setEducationInfo] = useState({})
   const [experienceInfo, setExperienceInfo] = useState({})
   const [showResume, setShowResume] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [savedResumeId, setSavedResumeId] = useState(null);
 
   const handleSubmitInfo = (data) => {
     setGeneralInfo(data);
@@ -22,14 +44,14 @@ function App() {
 
   const handleSubmitEducation = (data) => {
     setEducationInfo(data);
-    setMessage('Education Information saved locally!');
-    setTimeout(() => setMessage(''), 3000);
+    console.log('Education Info submitted:', data);
+    alert('Education Information saved successfully!');
   };
 
   const handleSubmitExperience = (data) => {
     setExperienceInfo(data);
-    setMessage('Experience Information saved locally!');
-    setTimeout(() => setMessage(''), 3000);
+    console.log('Experience Info submitted:', data);
+    alert('Experience Information saved successfully!');
   };
 
   const handleGenerateResume = async () => {
@@ -78,6 +100,21 @@ function App() {
           <h1>Resume Builder</h1>
         </header>
       </div>
+
+      {/* Message display */}
+      {message && (
+        <div style={{
+          padding: '10px',
+          margin: '10px',
+          backgroundColor: '#e3f2fd',
+          color: '#1565c0',
+          borderRadius: '4px',
+          border: '1px solid #bbdefb',
+          textAlign: 'center'
+        }}>
+          {message}
+        </div>
+      )}
 
       {/* form begins */}
       <div className="form-wrapper">
