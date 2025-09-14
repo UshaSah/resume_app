@@ -8,7 +8,7 @@ import ResumePreview from './components/ResumePreview'
 import { generatePDF } from './utils/pdfGenerator'
 
 // Simple API service
-const API_BASE_URL = 'http://localhost:80';
+const API_BASE_URL = 'http://54.221.116.49:3000';
 
 const saveResume = async (resumeData) => {
   const response = await fetch(`${API_BASE_URL}/api/resumes`, {
