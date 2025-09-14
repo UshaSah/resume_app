@@ -7,11 +7,33 @@ import ExperienceInfo from './components/WorkInfo'
 import ResumePreview from './components/ResumePreview'
 import { generatePDF } from './utils/pdfGenerator'
 
+// Simple API service
+const API_BASE_URL = 'http://54.221.116.49:3000';
+
+const saveResume = async (resumeData) => {
+  const response = await fetch(`${API_BASE_URL}/api/resumes`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(resumeData),
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to save resume');
+  }
+  
+  return response.json();
+};
+
 function App() {
   const [generalInfo, setGeneralInfo] = useState({})
   const [educationInfo, setEducationInfo] = useState({})
   const [experienceInfo, setExperienceInfo] = useState({})
   const [showResume, setShowResume] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [savedResumeId, setSavedResumeId] = useState(null);
 
   const handleSubmitInfo = (data) => {
     setGeneralInfo(data);
@@ -32,9 +54,31 @@ function App() {
     alert('Experience Information saved successfully!');
   };
 
-  const handleGenerateResume = () => {
+  const handleGenerateResume = async () => {
     if (generalInfo.fullName && educationInfo.institution && experienceInfo.company) {
-      setShowResume(true);
+      setIsLoading(true);
+      setMessage('Saving resume to backend...');
+      
+      try {
+        const resumeData = {
+          generalInfo,
+          educationInfo,
+          experienceInfo
+        };
+        
+        const result = await saveResume(resumeData);
+        setSavedResumeId(result.data.id);
+        setMessage(`Resume saved successfully! ID: ${result.data.id}`);
+        setShowResume(true);
+      } catch (error) {
+        console.error('Error saving resume:', error);
+        setMessage('Error saving resume. Please try again.');
+        // Still show the resume even if saving fails
+        setShowResume(true);
+      } finally {
+        setIsLoading(false);
+        setTimeout(() => setMessage(''), 5000);
+      }
     } else {
       alert('Please fill in all required sections first!');
     }
@@ -56,6 +100,21 @@ function App() {
           <h1>Resume Builder</h1>
         </header>
       </div>
+
+      {/* Message display */}
+      {message && (
+        <div style={{
+          padding: '10px',
+          margin: '10px',
+          backgroundColor: '#e3f2fd',
+          color: '#1565c0',
+          borderRadius: '4px',
+          border: '1px solid #bbdefb',
+          textAlign: 'center'
+        }}>
+          {message}
+        </div>
+      )}
 
       {/* form begins */}
       <div className="form-wrapper">
@@ -85,6 +144,18 @@ function App() {
             />
 
             <div className="resume-actions">
+              {savedResumeId && (
+                <div style={{
+                  padding: '10px',
+                  margin: '10px 0',
+                  backgroundColor: '#e3f2fd',
+                  color: '#1565c0',
+                  borderRadius: '4px',
+                  border: '1px solid #bbdefb'
+                }}>
+                  ✅ Resume saved with ID: {savedResumeId}
+                </div>
+              )}
               <button onClick={handleGeneratePDF}>Download PDF</button>
               <button onClick={() => window.print()}>Print Resume</button>
               <button onClick={() => setShowResume(false)}>Back to Form</button>

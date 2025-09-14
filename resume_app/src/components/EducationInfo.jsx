@@ -10,6 +10,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
 
     const handleSubmitEducation = (e) => {
         e.preventDefault()
+        console.log('Education form submitted, data:', educationInfo)
         onSubmitEducationInfo(educationInfo)
         console.log('Education Info submitted!')
     }
