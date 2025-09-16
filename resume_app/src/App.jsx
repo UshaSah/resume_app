@@ -5,6 +5,7 @@ import GeneralInfo from './components/GeneralInfo'
 import EducationInfo from './components/EducationInfo'
 import ExperienceInfo from './components/WorkInfo'
 import ResumePreview from './components/ResumePreview'
+import ResumeSelector from './components/ResumeSelector'
 import { generatePDF } from './utils/pdfGenerator'
 
 // Simple API service
@@ -27,6 +28,9 @@ const saveResume = async (resumeData) => {
 };
 
 function App() {
+  const [currentPage, setCurrentPage] = useState('selector')
+  const [selectedResumeId, setSelectedResumeId] = useState(null)
+  const [isEditingExisting, setIsEditingExisting] = useState(false)
   const [generalInfo, setGeneralInfo] = useState({})
   const [educationInfo, setEducationInfo] = useState({})
   const [experienceInfo, setExperienceInfo] = useState({})
@@ -35,6 +39,13 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [savedResumeId, setSavedResumeId] = useState(null);
 
+  // const handleGoToSelector = (selector) => {
+    
+  // }
+
+  // const goToForm = () => {
+
+  // }
   const handleSubmitInfo = (data) => {
     setGeneralInfo(data);
     console.log('General Info submitted:', data);
@@ -98,8 +109,40 @@ function App() {
       <div className="body">
         <header className='app-header'>
           <h1>Resume Builder</h1>
+          <nav className="app-navigation">
+            <button className={`nav-btn ${currentPage === 'form' ? 'active' : ''}`} onClick={() => setCurrentPage('form')}>
+              Create Resume
+            </button>
+            <button className={`nav-btn ${currentPage === 'selector' ? 'active': ''}`} onClick={() => setCurrentPage('selector')}>
+              View Resumes
+            </button>
+          </nav>
         </header>
       </div>
+
+      {currentPage === 'selector' ? (
+        <ResumeSelector
+          selectedResumeId={selectedResumeId}
+          onSelectResume={setSelectedResumeId}
+          onCreateNew={() => {
+            setSelectedResumeId(null);
+            setIsEditingExisting(false);
+            setGeneralInfo({});
+            setEducationInfo({});
+            setExperienceInfo({});
+            setCurrentPage('form');
+          }}
+          onEditSelected={(resume) => {
+            setSelectedResumeId(resume._id);
+            setIsEditingExisting(true);
+            setGeneralInfo(resume.generalInfo || {});
+            setEducationInfo(resume.educationInfo || {});
+            setExperienceInfo(resume.experienceInfo || {});
+            setCurrentPage('form');
+          }}
+        />
+      ) : (
+      <>
 
       {/* Message display */}
       {message && (
@@ -132,7 +175,9 @@ function App() {
         <ExperienceInfo onSubmitExperienceInfo={handleSubmitExperience} />
 
         <div className="fieldset-button">
-          <resume-button onClick={handleGenerateResume}>Generate Resume</resume-button>
+          <button onClick={handleGenerateResume} disabled={isLoading}>
+            {isLoading ? 'Saving...' : 'Generate Resume'}
+          </button>
         </div>
 
         {showResume && (
@@ -165,6 +210,8 @@ function App() {
 
 
       </div>
+      </>
+      )}
     </>
   )
 }
