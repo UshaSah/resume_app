@@ -1,12 +1,13 @@
 
 import { useState, useEffect } from 'react';
 import './ResumeSelector.css';
+import ResumePreview from './ResumePreview';
 
 // API configuration
 const API_BASE_URL = 'http://54.221.116.49:3000'
 
-// conditional rendering
-const ResumeSelector = () => {
+// ResumeSelector component with preview callback
+const ResumeSelector = ({ onPreviewResume }) => {
     const [resumes, setResumes] = useState([]);
     const [selectedResume, setSelectedResume] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -92,6 +93,19 @@ return (
             </option>
           ))}
         </select>
+        
+        {/* Preview Button - only show when resume is selected */}
+        {selectedResume && (
+          <div className="preview-actions">
+            <button 
+              className="preview-btn"
+              onClick={() => onPreviewResume(selectedResume)}
+            >
+              Preview Resume
+            </button>
+          </div>
+        )}
+        
       </div>
     </div>
   );

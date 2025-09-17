@@ -28,8 +28,9 @@ const saveResume = async (resumeData) => {
 };
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('selector')
+  const [currentPage, setCurrentPage] = useState('selector') // 'selector', 'form', 'preview'
   const [selectedResumeId, setSelectedResumeId] = useState(null)
+  const [previewResume, setPreviewResume] = useState(null) // Resume data for preview page
   const [isEditingExisting, setIsEditingExisting] = useState(false)
   const [generalInfo, setGeneralInfo] = useState({})
   const [educationInfo, setEducationInfo] = useState({})
@@ -116,31 +117,36 @@ function App() {
             <button className={`nav-btn ${currentPage === 'selector' ? 'active': ''}`} onClick={() => setCurrentPage('selector')}>
               View Resumes
             </button>
+            {previewResume && (
+              <button className={`nav-btn ${currentPage === 'preview' ? 'active': ''}`} onClick={() => setCurrentPage('preview')}>
+                Preview
+              </button>
+            )}
           </nav>
         </header>
       </div>
 
       {currentPage === 'selector' ? (
         <ResumeSelector
-          selectedResumeId={selectedResumeId}
-          onSelectResume={setSelectedResumeId}
-          onCreateNew={() => {
-            setSelectedResumeId(null);
-            setIsEditingExisting(false);
-            setGeneralInfo({});
-            setEducationInfo({});
-            setExperienceInfo({});
-            setCurrentPage('form');
-          }}
-          onEditSelected={(resume) => {
-            setSelectedResumeId(resume._id);
-            setIsEditingExisting(true);
-            setGeneralInfo(resume.generalInfo || {});
-            setEducationInfo(resume.educationInfo || {});
-            setExperienceInfo(resume.experienceInfo || {});
-            setCurrentPage('form');
+          onPreviewResume={(resume) => {
+            setPreviewResume(resume);
+            setCurrentPage('preview');
           }}
         />
+      ) : currentPage === 'preview' ? (
+        <div className="preview-page">
+          <div className="preview-header">
+            <h1>Resume Preview</h1>
+            <button onClick={() => setCurrentPage('selector')} className="back-btn">
+              ← Back to Selector
+            </button>
+          </div>
+          <ResumePreview
+            generalInfo={previewResume?.generalInfo}
+            educationInfo={previewResume?.educationInfo}
+            experienceInfo={previewResume?.experienceInfo}
+          />
+        </div>
       ) : (
       <>
 

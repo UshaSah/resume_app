@@ -55,23 +55,31 @@
     background-color: #2980b9;
   }
   
-  /* Selector section */
-  .selector-section {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 30px;
-  }
+/* Selector section */
+.selector-section {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
   
-  .selector-section label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #555;
-  }
+.selector-section label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #555;
+  text-align: center;
+  width: 100%;
+  margin-left: 0px;
+}
   
   .resume-dropdown {
-    width: 100%;
+    width: 400px;
     padding: 12px;
     border: 2px solid #ddd;
     border-radius: 5px;
