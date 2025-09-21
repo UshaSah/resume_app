@@ -125,24 +125,8 @@ button:hover {
     background-color: #8e698e;
 }
 
-resume-button {
-    width: 60%;
-    padding: 12px;
-    box-shadow: 5px 5px #545151;
-    border-radius: 12px;
-    background-color: #7077c6;
-    color: #2a3b3f;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-resume-button:hover {
-    background-color: #8e698e;
-}
-
-.generate-resume-btn {
-    width: 60%;
+.resume-button {
+    width: 80%;
     padding: 15px;
     box-shadow: 5px 5px #545151;
     border-radius: 12px;
@@ -153,15 +137,16 @@ resume-button:hover {
     cursor: pointer;
     transition: all 0.3s;
     border: none;
-    margin-top: 20px;
+    margin: 20px auto;
+    display: block;
 }
 
-.generate-resume-btn:hover {
+.resume-button:hover {
     background-color: #5a5fb3;
     transform: translateY(-2px);
 }
 
-.generate-resume-btn:disabled {
+.resume-button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
     transform: none;

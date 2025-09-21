@@ -96,50 +96,80 @@ function App() {
 
   return (
     <>
-      <div className="body">
-        <header className='app-header'>
-          <h1>Resume Builder</h1>
-          <nav className="app-navigation">
-            <button className={`nav-btn ${currentPage === 'form' ? 'active' : ''}`} onClick={() => setCurrentPage('form')}>
-              Create Resume
-            </button>
-            <button className={`nav-btn ${currentPage === 'selector' ? 'active': ''}`} onClick={() => setCurrentPage('selector')}>
-              View Resumes
-            </button>
-            {previewResume && (
-              <button className={`nav-btn ${currentPage === 'preview' ? 'active': ''}`} onClick={() => setCurrentPage('preview')}>
-                Preview
-              </button>
-            )}
-          </nav>
-        </header>
-      </div>
-
       {currentPage === 'selector' ? (
-        <ResumeSelector
-          onPreviewResume={(resume) => {
-            setPreviewResume(resume);
-            setCurrentPage('preview');
-          }}
-        />
-      ) : currentPage === 'preview' ? (
-        <div className="preview-page">
-          <div className="preview-header">
-            <h1>Resume Preview</h1>
-            <button onClick={() => setCurrentPage('selector')} className="back-btn">
-              ← Back to Selector
-            </button>
+        <>
+          <div className="body">
+            <header className='app-header'>
+              <h1>Resume Builder</h1>
+              <nav className="app-navigation">
+                <button className={`nav-btn ${currentPage === 'form' ? 'active' : ''}`} onClick={() => setCurrentPage('form')}>
+                  Create Resume
+                </button>
+                <button className={`nav-btn ${currentPage === 'selector' ? 'active': ''}`} onClick={() => setCurrentPage('selector')}>
+                  View Resumes
+                </button>
+                {previewResume && (
+                  <button className={`nav-btn ${currentPage === 'preview' ? 'active': ''}`} onClick={() => setCurrentPage('preview')}>
+                    Preview
+                  </button>
+                )}
+              </nav>
+            </header>
           </div>
-          <ResumePreview
-            generalInfo={previewResume?.generalInfo}
-            educationInfo={previewResume?.educationInfo}
-            experienceInfo={previewResume?.experienceInfo}
+          <ResumeSelector
+            onPreviewResume={(resume) => {
+              setPreviewResume(resume);
+              setCurrentPage('preview');
+            }}
           />
-        </div>
+        </>
+      ) : currentPage === 'preview' ? (
+        <>
+          <div className="body">
+            <header className='app-header'>
+              <h1>Resume Builder</h1>
+              <nav className="app-navigation">
+                <button className={`nav-btn ${currentPage === 'form' ? 'active' : ''}`} onClick={() => setCurrentPage('form')}>
+                  Create Resume
+                </button>
+                <button className={`nav-btn ${currentPage === 'selector' ? 'active': ''}`} onClick={() => setCurrentPage('selector')}>
+                  View Resumes
+                </button>
+                {previewResume && (
+                  <button className={`nav-btn ${currentPage === 'preview' ? 'active': ''}`} onClick={() => setCurrentPage('preview')}>
+                    Preview
+                  </button>
+                )}
+              </nav>
+            </header>
+          </div>
+          <div className="preview-page">
+            <div className="preview-header">
+              <h1>Resume Preview</h1>
+              <button onClick={() => setCurrentPage('selector')} className="back-btn">
+                ← Back to Selector
+              </button>
+            </div>
+            <ResumePreview
+              generalInfo={previewResume?.generalInfo}
+              educationInfo={previewResume?.educationInfo}
+              experienceInfo={previewResume?.experienceInfo}
+            />
+          </div>
+        </>
       ) : (
       <>
+        {/* Simple header for form page - no navigation */}
+        <div className="body">
+          <header className='form-header'>
+            <h1>Create Your Resume</h1>
+            <button onClick={() => setCurrentPage('selector')} className="back-to-selector-btn">
+              ← Back to Resume List
+            </button>
+          </header>
+        </div>
 
-      {/* Message display */}
+        {/* Message display */}
       {message && (
         <div style={{
           padding: '10px',
@@ -202,7 +232,6 @@ function App() {
             </div>
           </div>
         )}
-
 
       </div>
       </>
