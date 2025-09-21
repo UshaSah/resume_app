@@ -140,3 +140,29 @@ resume-button {
 resume-button:hover {
     background-color: #8e698e;
 }
+
+.generate-resume-btn {
+    width: 60%;
+    padding: 15px;
+    box-shadow: 5px 5px #545151;
+    border-radius: 12px;
+    background-color: #7077c6;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    margin-top: 20px;
+}
+
+.generate-resume-btn:hover {
+    background-color: #5a5fb3;
+    transform: translateY(-2px);
+}
+
+.generate-resume-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+}

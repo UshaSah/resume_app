@@ -1,31 +1,19 @@
 import { useState } from 'react'
 
-function ExperienceInfo({ onSubmitExperienceInfo }) {
-    const [experienceInfo, setExperienceInfo] = useState({
-        company: '',
-        job_title: '',
-        duration: ''
-    })
-
-
-    const handleSubmitExperience = (e) => {
-        e.preventDefault();
-        console.log('Experience form submitted, data:', experienceInfo);
-        onSubmitExperienceInfo(experienceInfo);
-        console.log('Experience Info submitted!');
-    };
-
+function ExperienceInfo({ formData, setFormData }) {
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setExperienceInfo(prev => ({
+        setFormData(prev => ({
             ...prev,
+            experienceInfo: {
+                ...prev.experienceInfo,
             [name]: value
+            }
         }));
     };
 
     return (
-        <form onSubmit={handleSubmitExperience} className='fieldset-wrapper'>
-            <div className='fieldset-wrapper'>
+        <div className='fieldset-wrapper'>
                 <fieldset>
                     <h2>Work Experience</h2>
                     <label htmlFor="company">Company Name</label>
@@ -33,7 +21,7 @@ function ExperienceInfo({ onSubmitExperienceInfo }) {
                         type="text"
                         id="company"
                         name="company"
-                        value={experienceInfo.company}
+                        value={formData.experienceInfo.company}
                         onChange={handleChange}
                         placeholder="Your company name"
                         required
@@ -43,7 +31,7 @@ function ExperienceInfo({ onSubmitExperienceInfo }) {
                         type="text"
                         id="job_title"
                         name="job_title"
-                        value={experienceInfo.job_title}
+                        value={formData.experienceInfo.job_title}
                         onChange={handleChange}
                         placeholder="Your job title"
                         required
@@ -53,17 +41,16 @@ function ExperienceInfo({ onSubmitExperienceInfo }) {
                         type="text"
                         id="duration"
                         name="duration"
-                        value={experienceInfo.duration}
+                        value={formData.experienceInfo.duration}
                         onChange={handleChange}
                         placeholder="e.g., 2020-2023"
                         required
                     />
-                    <div className="fieldset-button">
+                    {/* <div className="fieldset-button">
                         <button type="submit">Submit</button>
-                    </div>
+                    </div> */}
                 </fieldset>
             </div>
-        </form>
     );
 }
 

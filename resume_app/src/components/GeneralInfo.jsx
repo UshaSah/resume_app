@@ -1,30 +1,19 @@
 import { useState } from 'react'
 
-function GeneralInfo({ onSubmitGeneralInfo }) {
-    const [generalInfo, setGeneralInfo] = useState({
-        fullName: '',
-        email: '',
-        phone: ''
-    });
-
-    const handleSubmitInfo = (e) => {
-        e.preventDefault();
-        onSubmitGeneralInfo(generalInfo);
-        console.log('General Info submitted!')
-
-    };
-
+function GeneralInfo({formData, setFormData }) {
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setGeneralInfo(prev => ({
+        setFormData(prev => ({
             ...prev,
+            generalInfo: {
+             ...prev.generalInfo,
             [name]: value
+            }           
         }));
     };
 
     return (
-        <form onSubmit={handleSubmitInfo} className='fieldset-wrapper'>
-            <div className='fieldset-wrapper'>
+        <div className='fieldset-wrapper'>
                 <fieldset>
                     <h2>General Information</h2>
                     <label htmlFor="name">Full Name</label>
@@ -32,7 +21,7 @@ function GeneralInfo({ onSubmitGeneralInfo }) {
                         type="text"
                         id="name"
                         name="fullName"
-                        value={generalInfo.fullName}
+                        value={formData.generalInfo.fullName}
                         onChange={handleChange}
                         placeholder="Your full name"
                         required={true}
@@ -42,7 +31,7 @@ function GeneralInfo({ onSubmitGeneralInfo }) {
                         type="email"
                         id="email"
                         name="email"
-                        value={generalInfo.email}
+                        value={formData.generalInfo.email}
                         onChange={handleChange}
                         placeholder="Your email address"
                         required={true}
@@ -52,20 +41,19 @@ function GeneralInfo({ onSubmitGeneralInfo }) {
                         type="tel"
                         id="phone"
                         name="phone"
-                        value={generalInfo.phone}
+                        value={formData.generalInfo.phone}
                         onChange={handleChange}
                         placeholder="123-456-7890"
                         pattern="[0-9]{10}"
                         title="Please enter a phone number in the format: 1234567890"
                         required />
 
-                    <div className="fieldset-button">
+                    {/* <div className="fieldset-button">
                         <button type="submit">Submit</button>
-                    </div>
+                    </div> */}
                 </fieldset>
 
             </div>
-        </form>
 
     )
 

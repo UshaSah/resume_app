@@ -1,30 +1,18 @@
 import { useState } from 'react'
 
-function EducationInfo({ onSubmitEducationInfo }) {
-    const [educationInfo, setEducationInfo] = useState({
-        institution: '',
-        degree: '',
-        major: ''
-    });
-
-
-    const handleSubmitEducation = (e) => {
-        e.preventDefault()
-        console.log('Education form submitted, data:', educationInfo)
-        onSubmitEducationInfo(educationInfo)
-        console.log('Education Info submitted!')
-    }
-
+function EducationInfo({ formData, setFormData }) { 
     const handleEducationChange = (e) => {
         const { name, value } = e.target;
-        setEducationInfo(prev => ({
+        setFormData(prev => ({
             ...prev,
+            educationInfo: {
+             ...prev.educationInfo,
             [name]: value
+            }
         }));
     };
     return (
-        <form onSubmit={handleSubmitEducation} className='fieldset-wrapper'>
-            <div className='fieldset-wrapper'>
+        <div className='fieldset-wrapper'>
                 <fieldset>
                     <h2>Education</h2>
                     <label htmlFor="name">Name of University</label>
@@ -32,7 +20,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
                         type="text"
                         id="institution"
                         name="institution"
-                        value={educationInfo.institution}
+                        value={formData.educationInfo.institution}
                         onChange={handleEducationChange}
                         placeholder="Your university name"
                         required
@@ -42,7 +30,7 @@ function EducationInfo({ onSubmitEducationInfo }) {
                         type="text"
                         id="degree"
                         name="degree"
-                        value={educationInfo.degree}
+                        value={formData.educationInfo.degree}
                         onChange={handleEducationChange}
                         placeholder="Degree earned"
                         required
@@ -52,17 +40,16 @@ function EducationInfo({ onSubmitEducationInfo }) {
                         type="text"
                         id="major"
                         name="major"
-                        value={educationInfo.major}
+                        value={formData.educationInfo.major}
                         onChange={handleEducationChange}
                         placeholder="Field of Study"
                         required />
 
-                    <div className="fieldset-button">
+                    {/* <div className="fieldset-button">
                         <button type="submit">Submit</button>
-                    </div>
+                    </div> */}
                 </fieldset>
             </div>
-        </form>
     )
 }
 

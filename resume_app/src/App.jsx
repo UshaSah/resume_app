@@ -32,50 +32,39 @@ function App() {
   const [selectedResumeId, setSelectedResumeId] = useState(null)
   const [previewResume, setPreviewResume] = useState(null) // Resume data for preview page
   const [isEditingExisting, setIsEditingExisting] = useState(false)
-  const [generalInfo, setGeneralInfo] = useState({})
-  const [educationInfo, setEducationInfo] = useState({})
-  const [experienceInfo, setExperienceInfo] = useState({})
+  const [formData, setFormData] = useState({
+    generalInfo: {
+      fullName: '',
+      email: '',
+      phone: ''
+    },
+    educationInfo: {
+      institution: '',
+      degree: '',
+      major: ''
+    },
+    experienceInfo: {
+      company: '',
+      job_title: '',
+      duration: ''
+    }
+  });
   const [showResume, setShowResume] = useState(false);
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [savedResumeId, setSavedResumeId] = useState(null);
 
-  // const handleGoToSelector = (selector) => {
-    
-  // }
-
-  // const goToForm = () => {
-
-  // }
-  const handleSubmitInfo = (data) => {
-    setGeneralInfo(data);
-    console.log('General Info submitted:', data);
-    alert('General Information saved successfully!');
-  };
-
-
-  const handleSubmitEducation = (data) => {
-    setEducationInfo(data);
-    console.log('Education Info submitted:', data);
-    alert('Education Information saved successfully!');
-  };
-
-  const handleSubmitExperience = (data) => {
-    setExperienceInfo(data);
-    console.log('Experience Info submitted:', data);
-    alert('Experience Information saved successfully!');
-  };
-
+  
   const handleGenerateResume = async () => {
-    if (generalInfo.fullName && educationInfo.institution && experienceInfo.company) {
+    if (formData.generalInfo.fullName && formData.educationInfo.institution && formData.experienceInfo.company) {
       setIsLoading(true);
       setMessage('Saving resume to backend...');
       
       try {
         const resumeData = {
-          generalInfo,
-          educationInfo,
-          experienceInfo
+          generalInfo: formData.generalInfo,
+          educationInfo: formData.educationInfo,
+          experienceInfo: formData.experienceInfo
         };
         
         const result = await saveResume(resumeData);
@@ -169,19 +158,19 @@ function App() {
       <div className="form-wrapper">
         <h1>Profile Information</h1>
 
-        {/* genral info section */}
-        <GeneralInfo onSubmitGeneralInfo={handleSubmitInfo} />
+        {/* general info section */}
+        <GeneralInfo formData={formData} setFormData={setFormData} />
 
 
         {/* education section */}
-        <EducationInfo onSubmitEducationInfo={handleSubmitEducation} />
+        <EducationInfo formData={formData} setFormData={setFormData} />
 
 
         {/* experience section */}
-        <ExperienceInfo onSubmitExperienceInfo={handleSubmitExperience} />
+        <ExperienceInfo formData={formData} setFormData={setFormData} />
 
         <div className="fieldset-button">
-          <button onClick={handleGenerateResume} disabled={isLoading}>
+          <button className="resume-button" onClick={handleGenerateResume} disabled={isLoading}>
             {isLoading ? 'Saving...' : 'Generate Resume'}
           </button>
         </div>
@@ -189,9 +178,9 @@ function App() {
         {showResume && (
           <div className="resume-container">
             <ResumePreview
-              generalInfo={generalInfo}
-              educationInfo={educationInfo}
-              experienceInfo={experienceInfo}
+              generalInfo={formData.generalInfo}
+              educationInfo={formData.educationInfo}
+              experienceInfo={formData.experienceInfo}
             />
 
             <div className="resume-actions">
