@@ -58,7 +58,7 @@ function App() {
   const handleGenerateResume = async () => {
     if (formData.generalInfo.fullName && formData.educationInfo.institution && formData.experienceInfo.company) {
       setIsLoading(true);
-      setMessage('Saving resume to backend...');
+      setMessage(isEditingExisting ? 'Updating resume...' : 'Saving resume to backend...');
       
       try {
         const resumeData = {
@@ -67,10 +67,36 @@ function App() {
           experienceInfo: formData.experienceInfo
         };
         
-        const result = await saveResume(resumeData);
+        let result;
+        if (isEditingExisting && selectedResumeId) {
+          // Update existing resume
+          const response = await fetch(`${API_BASE_URL}/api/resumes/${selectedResumeId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(resumeData),
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to update resume');
+          }
+          
+          result = await response.json();
+          setMessage(`Resume updated successfully! ID: ${result.data.id}`);
+        } else {
+          // Create new resume
+          result = await saveResume(resumeData);
+          setMessage(`Resume saved successfully! ID: ${result.data.id}`);
+        }
+        
         setSavedResumeId(result.data.id);
-        setMessage(`Resume saved successfully! ID: ${result.data.id}`);
         setShowResume(true);
+        
+        // Reset editing mode
+        setIsEditingExisting(false);
+        setSelectedResumeId(null);
+        
       } catch (error) {
         console.error('Error saving resume:', error);
         setMessage('Error saving resume. Please try again.');
@@ -94,6 +120,86 @@ function App() {
     }
   };
 
+  // Handle Edit Resume - fetch resume data and auto-fill form
+  const handleEditResume = async (resumeId) => {
+    if (resumeId) {
+      setIsLoading(true);
+      setMessage('Loading resume data...');
+      
+      try {
+        // Fetch the specific resume data using the same API call pattern
+        const response = await fetch(`${API_BASE_URL}/api/resumes/${resumeId}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch resume data');
+        }
+        
+        const result = await response.json();
+        const resume = result.data;
+        
+        // Auto-fill form data with fetched resume data
+        setFormData({
+          generalInfo: {
+            fullName: resume.generalInfo?.fullName || '',
+            email: resume.generalInfo?.email || '',
+            phone: resume.generalInfo?.phone || ''
+          },
+          educationInfo: {
+            institution: resume.educationInfo?.institution || '',
+            degree: resume.educationInfo?.degree || '',
+            major: resume.educationInfo?.major || ''
+          },
+          experienceInfo: {
+            company: resume.experienceInfo?.company || '',
+            job_title: resume.experienceInfo?.job_title || '',
+            duration: resume.experienceInfo?.duration || ''
+          }
+        });
+        
+        // Set editing mode and navigate to form
+        setIsEditingExisting(true);
+        setSelectedResumeId(resumeId);
+        setCurrentPage('form');
+        
+        // Clear messages and hide resume preview
+        setMessage('');
+        setShowResume(false);
+        
+      } catch (error) {
+        console.error('Error fetching resume data:', error);
+        setMessage('Error loading resume data. Please try again.');
+        setTimeout(() => setMessage(''), 3000);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  // Clear form for new resume
+  const clearForm = () => {
+    setFormData({
+      generalInfo: {
+        fullName: '',
+        email: '',
+        phone: ''
+      },
+      educationInfo: {
+        institution: '',
+        degree: '',
+        major: ''
+      },
+      experienceInfo: {
+        company: '',
+        job_title: '',
+        duration: ''
+      }
+    });
+    setIsEditingExisting(false);
+    setSelectedResumeId(null);
+    setMessage('');
+    setShowResume(false);
+  };
+
   return (
     <>
       {currentPage === 'selector' ? (
@@ -102,7 +208,10 @@ function App() {
             <header className='app-header'>
               <h1>Resume Builder</h1>
               <nav className="app-navigation">
-                <button className={`nav-btn ${currentPage === 'form' ? 'active' : ''}`} onClick={() => setCurrentPage('form')}>
+                <button className={`nav-btn ${currentPage === 'form' ? 'active' : ''}`} onClick={() => {
+                  clearForm();
+                  setCurrentPage('form');
+                }}>
                   Create Resume
                 </button>
                 <button className={`nav-btn ${currentPage === 'selector' ? 'active': ''}`} onClick={() => setCurrentPage('selector')}>
@@ -121,6 +230,7 @@ function App() {
               setPreviewResume(resume);
               setCurrentPage('preview');
             }}
+            onEditResume={handleEditResume}
           />
         </>
       ) : currentPage === 'preview' ? (
@@ -129,7 +239,10 @@ function App() {
             <header className='app-header'>
               <h1>Resume Builder</h1>
               <nav className="app-navigation">
-                <button className={`nav-btn ${currentPage === 'form' ? 'active' : ''}`} onClick={() => setCurrentPage('form')}>
+                <button className={`nav-btn ${currentPage === 'form' ? 'active' : ''}`} onClick={() => {
+                  clearForm();
+                  setCurrentPage('form');
+                }}>
                   Create Resume
                 </button>
                 <button className={`nav-btn ${currentPage === 'selector' ? 'active': ''}`} onClick={() => setCurrentPage('selector')}>
@@ -201,7 +314,10 @@ function App() {
 
         <div className="fieldset-button">
           <button className="resume-button" onClick={handleGenerateResume} disabled={isLoading}>
-            {isLoading ? 'Saving...' : 'Generate Resume'}
+            {isLoading 
+              ? (isEditingExisting ? 'Updating...' : 'Saving...') 
+              : (isEditingExisting ? 'Update Resume' : 'Generate Resume')
+            }
           </button>
         </div>
 

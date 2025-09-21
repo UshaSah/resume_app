@@ -7,7 +7,7 @@ import ResumePreview from './ResumePreview';
 const API_BASE_URL = 'http://54.221.116.49:3000'
 
 // ResumeSelector component with preview callback
-const ResumeSelector = ({ onPreviewResume }) => {
+const ResumeSelector = ({ onPreviewResume, onEditResume }) => {
     const [resumes, setResumes] = useState([]);
     const [selectedResume, setSelectedResume] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -52,7 +52,7 @@ const ResumeSelector = ({ onPreviewResume }) => {
 
     // function to format resume display name for dropdown
     const getResumeDisplayName = (resume) => {
-        const name = resume.generalInfo?.name || 'Unknown';
+        const name = resume.generalInfo?.fullName || 'Unknown';
         const company = resume.experienceInfo?.company || 'No Company';
         const date = new Date(resume.createdAt).toLocaleDateString();
         return `${name} - ${company} (${date})`;
@@ -102,6 +102,12 @@ return (
               onClick={() => onPreviewResume(selectedResume)}
             >
               Preview Resume
+            </button>
+            <button 
+              className="preview-btn"
+              onClick={() => onEditResume(selectedResume._id)}
+            >
+              Edit Resume
             </button>
           </div>
         )}
