@@ -55,7 +55,7 @@ function App() {
   const [savedResumeId, setSavedResumeId] = useState(null);
 
   
-  const handleGenerateResume = async () => {
+  const handleSubmitResume = async () => {
     if (formData.generalInfo.fullName && formData.educationInfo.institution && formData.experienceInfo.company) {
       setIsLoading(true);
       setMessage(isEditingExisting ? 'Updating resume...' : 'Saving resume to backend...');
@@ -313,11 +313,8 @@ function App() {
         <ExperienceInfo formData={formData} setFormData={setFormData} />
 
         <div className="fieldset-button">
-          <button className="resume-button" onClick={handleGenerateResume} disabled={isLoading}>
-            {isLoading 
-              ? (isEditingExisting ? 'Updating...' : 'Saving...') 
-              : (isEditingExisting ? 'Update Resume' : 'Generate Resume')
-            }
+          <button className="resume-button" onClick={handleSubmitResume} disabled={isLoading}>
+            Submit
           </button>
         </div>
 
