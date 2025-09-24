@@ -1,73 +1,39 @@
-const { MongoClient } = require('mongodb');
+const mongoose = require('mongoose');
 
-// MongoDB connection string (replace <db_password> with your actual password)
-const MONGODB_URI = 'mongodb+srv://usha_db:q6B3GxlQeGLGhnOB@cluster0.3kjtlxz.mongodb.net/resume_app?retryWrites=true&w=majority&appName=Cluster0';
+// Mongoose connection string (read from env or fallback)
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://usha_db:q6B3GxlQeGLGhnOB@cluster0.3kjtlxz.mongodb.net/resume_app?retryWrites=true&w=majority&appName=Cluster0';
+const DB_NAME = process.env.DB_NAME || 'resume_app';
 
-// Database and collection names
-const DB_NAME = 'resume_app';
-const COLLECTION_NAME = 'resumes';
-
-let client;
-let db;
-let collection;
-
-// Connect to MongoDB
+// Connect to MongoDB with Mongoose
 const connectToDatabase = async () => {
-  try {
-    if (!client) {
-      client = new MongoClient(MONGODB_URI);
-      await client.connect();
-      console.log('✅ Connected to MongoDB Atlas');
-    }
-    
-    if (!db) {
-      db = client.db(DB_NAME);
-    }
-    
-    if (!collection) {
-      collection = db.collection(COLLECTION_NAME);
-    }
-    
-    return { client, db, collection };
-  } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
-    throw error;
+  if (mongoose.connection.readyState === 1) {
+    return mongoose;
   }
+  await mongoose.connect(MONGODB_URI, { dbName: DB_NAME });
+  console.log('✅ Mongoose connected (database.js)');
+  return mongoose;
 };
 
-// Get collection instance
-const getCollection = async () => {
-  const { collection } = await connectToDatabase();
-  return collection;
+// Get a native collection via Mongoose connection (shim for existing code)
+const getCollection = async (collectionName = 'resumes') => {
+  await connectToDatabase();
+  return mongoose.connection.db.collection(collectionName);
 };
 
-// Close database connection
+// Close mongoose connection
 const closeConnection = async () => {
-  if (client) {
-    await client.close();
-    console.log('🔌 MongoDB connection closed');
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.connection.close();
+    console.log('🔌 Mongoose connection closed');
   }
 };
 
-// Test database connection
+// Test database connection (simple ping using admin command)
 const testConnection = async () => {
   try {
-    const collection = await getCollection();
-    
-    // Test by inserting a simple document
-    const testDoc = {
-      test: true,
-      message: 'Database connection test',
-      timestamp: new Date()
-    };
-    
-    const result = await collection.insertOne(testDoc);
-    console.log('✅ Database connection test successful:', result.insertedId);
-    
-    // Clean up test document
-    await collection.deleteOne({ _id: result.insertedId });
-    console.log('🧹 Test document cleaned up');
-    
+    await connectToDatabase();
+    await mongoose.connection.db.admin().command({ ping: 1 });
+    console.log('✅ Database connection test successful (ping)');
     return true;
   } catch (error) {
     console.error('❌ Database connection test failed:', error);
@@ -79,5 +45,5 @@ module.exports = {
   connectToDatabase,
   getCollection,
   closeConnection,
-  testConnection
+  testConnection,
 };

@@ -1,7 +1,8 @@
+const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { getCollection, testConnection, closeConnection } = require('./database');
+
 
 const app = express();
 const PORT = process.env.PORT || 80;
@@ -10,231 +11,30 @@ const PORT = process.env.PORT || 80;
 app.use(cors());
 app.use(express.json());
 
+// Import routes
+const authRoutes = require('./routes/auth');
+const resumeRoutes = require('./routes/resumes');
+
 // Serve static files from React build
 const frontendPath = path.join(__dirname, '../resume_app/dist');
 app.use(express.static(frontendPath));
 
-// Health check endpoint
-app.get('/api/health', async (req, res) => {
-    try {
-        // Test database connection
-        const isDbConnected = await testConnection();
-        
-        res.json({ 
-            message: 'Server is running!', 
-            status: 'healthy',
-            database: isDbConnected ? 'connected' : 'disconnected',
-            timestamp: new Date().toISOString()
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: 'Server error',
-            status: 'unhealthy',
-            error: error.message,
-            timestamp: new Date().toISOString()
-        });
-    }
+// Health check endpoint (reports mongoose connection status)
+app.get('/api/health', (req, res) => {
+    const states = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+    const state = states[mongoose.connection.readyState] || 'unknown';
+    res.json({
+        success: true,
+        message: 'Server is healthy',
+        dbState: state,
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
 });
 
-// CREATE - Add new resume
-app.post('/api/resumes', async (req, res) => {
-    try {
-        const { generalInfo, educationInfo, experienceInfo } = req.body;
-
-        if (!generalInfo || !educationInfo || !experienceInfo) {
-            return res.status(400).json({
-                success: false,
-                message: 'Missing required sections'
-            });
-        }
-
-        const collection = await getCollection();
-        
-        const newResume = {
-            generalInfo,
-            educationInfo,
-            experienceInfo,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        };
-
-        const result = await collection.insertOne(newResume);
-
-        res.status(201).json({
-            success: true,
-            message: 'Resume created successfully!',
-            data: {
-                id: result.insertedId,
-                ...newResume
-            }
-        });
-
-    } catch (error) {
-        console.error('Error creating resume:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error creating resume',
-            error: error.message
-        });
-    }
-});
-
-// READ - Get all resumes
-app.get('/api/resumes', async (req, res) => {
-    try {
-        const collection = await getCollection();
-        const resumes = await collection.find({}).toArray();
-
-        res.json({
-            success: true,
-            data: resumes,
-            count: resumes.length,
-            message: 'Resumes retrieved successfully'
-        });
-    } catch (error) {
-        console.error('Error retrieving resumes:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error retrieving resumes',
-            error: error.message
-        });
-    }
-});
-
-// READ - Get single resume
-app.get('/api/resumes/:id', async (req, res) => {
-    try {
-        const { ObjectId } = require('mongodb');
-        const id = req.params.id;
-        
-        // Validate ObjectId format
-        if (!ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid resume ID format'
-            });
-        }
-
-        const collection = await getCollection();
-        const resume = await collection.findOne({ _id: new ObjectId(id) });
-
-        if (!resume) {
-            return res.status(404).json({
-                success: false,
-                message: 'Resume not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            data: resume,
-            message: 'Resume retrieved successfully'
-        });
-
-    } catch (error) {
-        console.error('Error retrieving resume:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error retrieving resume',
-            error: error.message
-        });
-    }
-});
-
-// UPDATE - Update resume
-app.put('/api/resumes/:id', async (req, res) => {
-    try {
-        const { ObjectId } = require('mongodb');
-        const id = req.params.id;
-        
-        // Validate ObjectId format
-        if (!ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid resume ID format'
-            });
-        }
-
-        const { generalInfo, educationInfo, experienceInfo } = req.body;
-        const collection = await getCollection();
-
-        const updateData = {
-            updatedAt: new Date()
-        };
-
-        if (generalInfo) updateData.generalInfo = generalInfo;
-        if (educationInfo) updateData.educationInfo = educationInfo;
-        if (experienceInfo) updateData.experienceInfo = experienceInfo;
-
-        const result = await collection.updateOne(
-            { _id: new ObjectId(id) },
-            { $set: updateData }
-        );
-
-        if (result.matchedCount === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Resume not found'
-            });
-        }
-
-        const updatedResume = await collection.findOne({ _id: new ObjectId(id) });
-
-        res.json({
-            success: true,
-            message: 'Resume updated successfully!',
-            data: updatedResume
-        });
-
-    } catch (error) {
-        console.error('Error updating resume:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error updating resume',
-            error: error.message
-        });
-    }
-});
-
-// DELETE - Delete resume
-app.delete('/api/resumes/:id', async (req, res) => {
-    try {
-        const { ObjectId } = require('mongodb');
-        const id = req.params.id;
-        
-        // Validate ObjectId format
-        if (!ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid resume ID format'
-            });
-        }
-
-        const collection = await getCollection();
-        const result = await collection.deleteOne({ _id: new ObjectId(id) });
-
-        if (result.deletedCount === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Resume not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            message: 'Resume deleted successfully!',
-            deletedId: id
-        });
-
-    } catch (error) {
-        console.error('Error deleting resume:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error deleting resume',
-            error: error.message
-        });
-    }
-});
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/resumes', resumeRoutes);
 
 // Serve React app for root path
 app.get('/', (req, res) => {
@@ -249,34 +49,29 @@ app.use((req, res) => {
 // Graceful shutdown
 process.on('SIGTERM', async () => {
     console.log('SIGTERM received. Shutting down gracefully...');
-    await closeConnection();
+    try { await mongoose.connection.close(); } catch (e) {}
     process.exit(0);
 });
 
-process.on('SIGINT', async () => {
-    console.log('SIGINT received. Shutting down gracefully...');
-    await closeConnection();
-    process.exit(0);
-});
 
-// Start server
-app.listen(PORT, async () => {
-    console.log(`🚀 Resume App running on http://localhost:${PORT}`);
-    console.log(`📋 Available endpoints:`);
-    console.log(`   GET  / - Frontend (React App)`);
-    console.log(`   POST /api/resumes - Create new resume`);
-    console.log(`   GET  /api/resumes - Get all resumes`);
-    console.log(`   GET  /api/resumes/:id - Get single resume`);
-    console.log(`   PUT  /api/resumes/:id - Update resume`);
-    console.log(`   DELETE /api/resumes/:id - Delete resume`);
-    console.log(`   GET  /api/health - Health check`);
-    
-    // Test database connection on startup
-    console.log('🔌 Testing database connection...');
-    const isConnected = await testConnection();
-    if (isConnected) {
-        console.log('✅ Database connection successful!');
-    } else {
-        console.log('❌ Database connection failed!');
+// Connect to MongoDB with Mongoose, then start server
+async function start() {
+    try {
+        const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://usha_db:q6B3GxlQeGLGhnOB@cluster0.3kjtlxz.mongodb.net/resume_app?retryWrites=true&w=majority&appName=Cluster0';
+        await mongoose.connect(MONGODB_URI, { dbName: 'resume_app' });
+        console.log('✅ Mongoose connected');
+
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+            console.log(`Health check: http://localhost:${PORT}/api/health`);
+            // console.log('Frontend: http://localhost:5173');
+        });
+    } catch (err) {
+        console.error('❌ Failed to connect Mongoose:', err);
+        process.exit(1);
     }
-});
+}
+
+start();
+
+module.exports = app;
