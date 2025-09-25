@@ -13,11 +13,13 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
 
   // Update mode and clear form when route changes
   useEffect(() => {
     setIsLogin(location.pathname === '/login');
     setMessage('');
+    setErrors({});
     setName('');
     setEmail('');
     setPassword('');
@@ -27,14 +29,61 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
+    setErrors({});
+
+    // Client-side validation
+    const clientErrors = {};
+    
+    if (isLogin) {
+      // Login validation
+      if (!email || email.trim().length === 0) {
+        clientErrors.email = 'Email is required';
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        clientErrors.email = 'Please enter a valid email address';
+      }
+      
+      if (!password || password.length === 0) {
+        clientErrors.password = 'Password is required';
+      }
+    } else {
+      // Registration validation
+      if (!name || name.trim().length === 0) {
+        clientErrors.name = 'Name is required';
+      } else if (name.trim().length < 2) {
+        clientErrors.name = 'Name must be at least 2 characters long';
+      } else if (name.trim().length > 50) {
+        clientErrors.name = 'Name must be less than 50 characters';
+      }
+      
+      if (!email || email.trim().length === 0) {
+        clientErrors.email = 'Email is required';
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        clientErrors.email = 'Please enter a valid email address';
+      }
+      
+      if (!password || password.length === 0) {
+        clientErrors.password = 'Password is required';
+      } else if (password.length < 6) {
+        clientErrors.password = 'Password must be at least 6 characters long';
+      } else if (password.length > 128) {
+        clientErrors.password = 'Password must be less than 128 characters';
+      }
+      
+      if (!confirmPassword || confirmPassword.length === 0) {
+        clientErrors.confirmPassword = 'Please confirm your password';
+      } else if (password !== confirmPassword) {
+        clientErrors.confirmPassword = 'Passwords do not match';
+      }
+    }
+
+    // If client-side validation fails, show errors and return
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors);
+      return;
+    }
 
     if (isLogin) {
       // Login logic
-      if (!email || !password) {
-        setMessage('Please enter your credentials');
-        return;
-      }
-
       try {
         setSubmitting(true);
         
@@ -54,7 +103,16 @@ function Register() {
           setMessage('Login successful! Redirecting...');
           setTimeout(() => navigate('/'), 800);
         } else {
-          setMessage(data.message || 'Login failed. Please try again.');
+          // Handle validation errors (422) or other errors
+          if (response.status === 422 && data.errors) {
+            const serverErrors = {};
+            data.errors.forEach(error => {
+              serverErrors[error.field] = error.message;
+            });
+            setErrors(serverErrors);
+          } else {
+            setMessage(data.message || 'Login failed. Please try again.');
+          }
         }
       } catch (err) {
         console.error('Login error:', err);
@@ -64,14 +122,6 @@ function Register() {
       }
     } else {
       // Registration logic
-      if (!name || !email || !password || !confirmPassword) {
-        setMessage('Please fill all fields');
-        return;
-      }
-      if (password !== confirmPassword) {
-        setMessage('Passwords do not match');
-        return;
-      }
 
       try {
         setSubmitting(true);
@@ -92,7 +142,16 @@ function Register() {
           setMessage('Registration successful! Redirecting...');
           setTimeout(() => navigate('/'), 800);
         } else {
-          setMessage(data.message || 'Registration failed. Please try again.');
+          // Handle validation errors (422) or other errors
+          if (response.status === 422 && data.errors) {
+            const serverErrors = {};
+            data.errors.forEach(error => {
+              serverErrors[error.field] = error.message;
+            });
+            setErrors(serverErrors);
+          } else {
+            setMessage(data.message || 'Registration failed. Please try again.');
+          }
         }
       } catch (err) {
         console.error('Registration error:', err);
@@ -130,8 +189,20 @@ function Register() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              style={{ width: '100%', padding: 10, marginBottom: 12, display: 'block' }}
+              style={{ 
+                width: '100%', 
+                padding: 10, 
+                marginBottom: errors.name ? 4 : 12, 
+                display: 'block',
+                border: errors.name ? '2px solid #e74c3c' : '1px solid #ddd',
+                borderRadius: 4
+              }}
             />
+            {errors.name && (
+              <div style={{ color: '#e74c3c', fontSize: '12px', marginBottom: 8 }}>
+                {errors.name}
+              </div>
+            )}
           </>
         )}
 
@@ -141,8 +212,20 @@ function Register() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          style={{ width: '100%', padding: 10, marginBottom: 12, display: 'block' }}
+          style={{ 
+            width: '100%', 
+            padding: 10, 
+            marginBottom: errors.email ? 4 : 12, 
+            display: 'block',
+            border: errors.email ? '2px solid #e74c3c' : '1px solid #ddd',
+            borderRadius: 4
+          }}
         />
+        {errors.email && (
+          <div style={{ color: '#e74c3c', fontSize: '12px', marginBottom: 8 }}>
+            {errors.email}
+          </div>
+        )}
 
         <label style={{ display: 'block', marginBottom: 6, textAlign: 'left', marginLeft: 0, paddingLeft: 0 }}>Password</label>
         <input
@@ -150,8 +233,20 @@ function Register() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="••••••••"
-          style={{ width: '100%', padding: 10, marginBottom: 12, display: 'block' }}
+          style={{ 
+            width: '100%', 
+            padding: 10, 
+            marginBottom: errors.password ? 4 : 12, 
+            display: 'block',
+            border: errors.password ? '2px solid #e74c3c' : '1px solid #ddd',
+            borderRadius: 4
+          }}
         />
+        {errors.password && (
+          <div style={{ color: '#e74c3c', fontSize: '12px', marginBottom: 8 }}>
+            {errors.password}
+          </div>
+        )}
 
         {!isLogin && (
           <>
@@ -161,8 +256,20 @@ function Register() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
-              style={{ width: '100%', padding: 10, marginBottom: 16, display: 'block' }}
+              style={{ 
+                width: '100%', 
+                padding: 10, 
+                marginBottom: errors.confirmPassword ? 4 : 16, 
+                display: 'block',
+                border: errors.confirmPassword ? '2px solid #e74c3c' : '1px solid #ddd',
+                borderRadius: 4
+              }}
             />
+            {errors.confirmPassword && (
+              <div style={{ color: '#e74c3c', fontSize: '12px', marginBottom: 8 }}>
+                {errors.confirmPassword}
+              </div>
+            )}
           </>
         )}
 
@@ -180,6 +287,21 @@ function Register() {
           >
             {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
           </Link>
+          
+          {isLogin && (
+            <div style={{ marginTop: 8 }}>
+              <Link 
+                to="/forgot-password"
+                style={{ 
+                  color: '#1565c0', 
+                  textDecoration: 'none',
+                  fontSize: '14px'
+                }}
+              >
+                Forgot your password?
+              </Link>
+            </div>
+          )}
         </div>
       </form>
     </div>
