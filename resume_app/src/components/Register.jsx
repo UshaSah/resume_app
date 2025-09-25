@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -13,6 +13,16 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // Update mode and clear form when route changes
+  useEffect(() => {
+    setIsLogin(location.pathname === '/login');
+    setMessage('');
+    setName('');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+  }, [location.pathname]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -94,7 +104,7 @@ function Register() {
   };
 
   return (
-    <div style={{ maxWidth: 800, margin: '80px auto', padding: 60, background: '#fff', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+    <div style={{ maxWidth: 1000, margin: '80px auto', padding: 80, background: '#fff', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
       <h2 style={{ marginTop: 0, textAlign: 'center' }}>{isLogin ? 'Sign In' : 'Create Account'}</h2>
 
       {message && (
@@ -161,27 +171,15 @@ function Register() {
         </button>
 
         <div style={{ marginTop: 12, textAlign: 'center' }}>
-          <button 
-            type="button"
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setMessage('');
-              setName('');
-              setEmail('');
-              setPassword('');
-              setConfirmPassword('');
-            }}
+          <Link 
+            to={isLogin ? "/register" : "/login"}
             style={{ 
-              background: 'none', 
-              border: 'none', 
               color: '#1565c0', 
-              textDecoration: 'none',
-              cursor: 'pointer',
-              fontSize: 'inherit'
+              textDecoration: 'none'
             }}
           >
             {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-          </button>
+          </Link>
         </div>
       </form>
     </div>
