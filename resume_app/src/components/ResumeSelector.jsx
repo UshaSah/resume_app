@@ -4,7 +4,7 @@ import './ResumeSelector.css';
 import ResumePreview from './ResumePreview';
 
 // API configuration
-const API_BASE_URL = 'http://54.221.116.49:3000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 // ResumeSelector component with preview callback
 const ResumeSelector = ({ onPreviewResume, onEditResume }) => {
@@ -23,9 +23,18 @@ const ResumeSelector = ({ onPreviewResume, onEditResume }) => {
             setLoading(true);
             setError(null);
 
-            const response = await fetch(`${API_BASE_URL}/api/resumes`);
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_BASE_URL}/api/resumes`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Authentication required. Please login again.');
+                }
                 throw new Error('Failed to fetch resumes');
             }
 

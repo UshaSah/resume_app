@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth.jsx';
 import GeneralInfo from './GeneralInfo';
 import EducationInfo from './EducationInfo';
 import ExperienceInfo from './WorkInfo';
 import ResumePreview from './ResumePreview';
 import { generatePDF } from '../utils/pdfGenerator';
 
-const API_BASE_URL = 'http://54.221.116.49:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
-function ResumeForm({ user }) {
+function ResumeForm() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditing = Boolean(id);
@@ -30,7 +32,13 @@ function ResumeForm({ user }) {
         try {
           setIsLoading(true);
           setMessage('Loading resume data...');
-          const response = await fetch(`${API_BASE_URL}/api/resumes/${id}`);
+          const token = localStorage.getItem('token');
+          const response = await fetch(`${API_BASE_URL}/api/resumes/${id}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
           if (!response.ok) throw new Error('Failed to fetch resume data');
           const result = await response.json();
           const resume = result.data;
@@ -80,18 +88,26 @@ function ResumeForm({ user }) {
 
       let result;
       if (isEditing) {
+        const token = localStorage.getItem('token');
         const response = await fetch(`${API_BASE_URL}/api/resumes/${id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify(resumeData),
         });
         if (!response.ok) throw new Error('Failed to update resume');
         result = await response.json();
         setMessage(`Resume updated successfully! ID: ${result.data.id}`);
       } else {
+        const token = localStorage.getItem('token');
         const response = await fetch(`${API_BASE_URL}/api/resumes`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify(resumeData),
         });
         if (!response.ok) throw new Error('Failed to save resume');

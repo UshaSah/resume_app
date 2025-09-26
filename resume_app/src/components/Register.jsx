@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth.jsx';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 function Register() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { updateUser } = useAuth();
   const [isLogin, setIsLogin] = useState(location.pathname === '/login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -100,8 +102,9 @@ function Register() {
         if (data.success) {
           localStorage.setItem('user', JSON.stringify(data.data.user));
           localStorage.setItem('token', data.data.token);
+          updateUser(data.data.user); // Update auth context
           setMessage('Login successful! Redirecting...');
-          setTimeout(() => navigate('/'), 800);
+          setTimeout(() => navigate('/dashboard'), 800);
         } else {
           // Handle validation errors (422) or other errors
           if (response.status === 422 && data.errors) {
@@ -139,8 +142,9 @@ function Register() {
         if (data.success) {
           localStorage.setItem('user', JSON.stringify(data.data.user));
           localStorage.setItem('token', data.data.token);
+          updateUser(data.data.user); // Update auth context
           setMessage('Registration successful! Redirecting...');
-          setTimeout(() => navigate('/'), 800);
+          setTimeout(() => navigate('/dashboard'), 800);
         } else {
           // Handle validation errors (422) or other errors
           if (response.status === 422 && data.errors) {
