@@ -11,11 +11,43 @@ router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ success: false, message: 'Name, email, and password are required' });
+    // Validation errors array
+    const errors = [];
+
+    // Required field validation
+    if (!name || name.trim().length === 0) {
+      errors.push({ field: 'name', message: 'Name is required' });
+    } else if (name.trim().length < 2) {
+      errors.push({ field: 'name', message: 'Name must be at least 2 characters long' });
+    } else if (name.trim().length > 50) {
+      errors.push({ field: 'name', message: 'Name must be less than 50 characters' });
     }
-    if (password.length < 6) {
-      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters long' });
+
+    if (!email || email.trim().length === 0) {
+      errors.push({ field: 'email', message: 'Email is required' });
+    } else {
+      // Email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        errors.push({ field: 'email', message: 'Please enter a valid email address' });
+      }
+    }
+
+    if (!password || password.length === 0) {
+      errors.push({ field: 'password', message: 'Password is required' });
+    } else if (password.length < 6) {
+      errors.push({ field: 'password', message: 'Password must be at least 6 characters long' });
+    } else if (password.length > 128) {
+      errors.push({ field: 'password', message: 'Password must be less than 128 characters' });
+    }
+
+    // Return validation errors if any
+    if (errors.length > 0) {
+      return res.status(422).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors
+      });
     }
 
     // Check if user already exists
@@ -53,8 +85,30 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: 'Email and password are required' });
+    // Validation errors array
+    const errors = [];
+
+    if (!email || email.trim().length === 0) {
+      errors.push({ field: 'email', message: 'Email is required' });
+    } else {
+      // Email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        errors.push({ field: 'email', message: 'Please enter a valid email address' });
+      }
+    }
+
+    if (!password || password.length === 0) {
+      errors.push({ field: 'password', message: 'Password is required' });
+    }
+
+    // Return validation errors if any
+    if (errors.length > 0) {
+      return res.status(422).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors
+      });
     }
 
     const user = await User.findOne({ email });
