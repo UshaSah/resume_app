@@ -1,19 +1,24 @@
 const express = require('express');
 const { getCollection } = require('../database');
 const { ObjectId } = require('mongodb');
+const { authenticateToken } = require('../middleware/auth');
 const router = express.Router();
 
-// READ - Get all resumes
+// Apply authentication middleware to all routes
+router.use(authenticateToken);
+
+// READ - Get all resumes for the authenticated user
 router.get('/', async (req, res) => {
     try {
         const collection = await getCollection();
-        const resumes = await collection.find({}).toArray();
+        // Filter resumes by userId
+        const resumes = await collection.find({ userId: req.user._id }).toArray();
 
         res.json({
             success: true,
             data: resumes,
             count: resumes.length,
-            message: 'Resumes retrieved successfully'
+            message: 'User resumes retrieved successfully'
         });
     } catch (error) {
         console.error('Error retrieving resumes:', error);
@@ -25,7 +30,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// READ - Get single resume
+// READ - Get single resume (only if owned by user)
 router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -39,12 +44,16 @@ router.get('/:id', async (req, res) => {
         }
 
         const collection = await getCollection();
-        const resume = await collection.findOne({ _id: new ObjectId(id) });
+        // Find resume by ID AND userId to ensure user owns it
+        const resume = await collection.findOne({ 
+            _id: new ObjectId(id),
+            userId: req.user._id 
+        });
 
         if (!resume) {
             return res.status(404).json({
                 success: false,
-                message: 'Resume not found'
+                message: 'Resume not found or access denied'
             });
         }
 
@@ -68,7 +77,8 @@ router.post('/', async (req, res) => {
     try {
         const resumeData = req.body;
         
-        // Add timestamp
+        // Add user association and timestamps
+        resumeData.userId = req.user._id;
         resumeData.createdAt = new Date();
         resumeData.updatedAt = new Date();
 
@@ -93,7 +103,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// UPDATE - Update existing resume
+// UPDATE - Update existing resume (only if owned by user)
 router.put('/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -111,15 +121,19 @@ router.put('/:id', async (req, res) => {
         updateData.updatedAt = new Date();
 
         const collection = await getCollection();
+        // Update only if resume belongs to the user
         const result = await collection.updateOne(
-            { _id: new ObjectId(id) },
+            { 
+                _id: new ObjectId(id),
+                userId: req.user._id 
+            },
             { $set: updateData }
         );
 
         if (result.matchedCount === 0) {
             return res.status(404).json({
                 success: false,
-                message: 'Resume not found'
+                message: 'Resume not found or access denied'
             });
         }
 
@@ -141,7 +155,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE - Delete resume
+// DELETE - Delete resume (only if owned by user)
 router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -155,12 +169,16 @@ router.delete('/:id', async (req, res) => {
         }
 
         const collection = await getCollection();
-        const result = await collection.deleteOne({ _id: new ObjectId(id) });
+        // Delete only if resume belongs to the user
+        const result = await collection.deleteOne({ 
+            _id: new ObjectId(id),
+            userId: req.user._id 
+        });
 
         if (result.deletedCount === 0) {
             return res.status(404).json({
                 success: false,
-                message: 'Resume not found'
+                message: 'Resume not found or access denied'
             });
         }
 
